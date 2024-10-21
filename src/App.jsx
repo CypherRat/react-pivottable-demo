@@ -4,33 +4,38 @@ import "react-pivottable/pivottable.css";
 import createPlotlyRenderers from "react-pivottable/PlotlyRenderers";
 import Plot from "react-plotly.js";
 import Papa from "papaparse";
+import "./App.css";
 
-const mockLargeDataSet = [
-  [
-    "Cable Type",
-    "Length (m)",
-    "Color",
-    "Price (USD)",
-    "Manufacturer",
-    "Location",
-  ],
-  ["Coaxial", 10, "Black", 15, "CablePro", "USA"],
-  ["Fiber Optic", 50, "White", 120, "FiberMax", "Germany"],
-  ["Ethernet", 20, "Blue", 10, "NetConnect", "China"],
-  ...Array.from({ length: 100 }, (_, i) => [
-    `Cable Type ${i + 1}`,
-    Math.floor(Math.random() * 100),
-    ["Black", "White", "Blue", "Red"][i % 4],
-    (Math.random() * 100).toFixed(2),
-    `Manufacturer ${i + 1}`,
-    ["USA", "Germany", "China", "Japan"][i % 4],
-  ]),
-];
+const mockApiResponse = {
+  data: {
+    getAvailableF2PortsByTerminalId: {
+      list: [
+        {
+          address_id: "Z2495074",
+          hub_id: "H4015",
+          terminal_id_code: "FT-H4015308",
+          terminal_exc_code: "A8FTP",
+          f2_port: 85,
+          f2_port_status: "V",
+        },
+        {
+          address_id: "Z2495074",
+          hub_id: "H4015",
+          terminal_id_code: "FT-H4015308",
+          terminal_exc_code: "A8FTP",
+          f2_port: 86,
+          f2_port_status: "V",
+        },
+      ],
+      status: true,
+      msg: "F2 Ports List",
+    },
+  },
+};
 
 const mockData = true;
 
 const API_URL = "https://api.example.com/cabledata";
-
 function App() {
   const [pivotState, setPivotState] = useState({
     data: [],
@@ -39,16 +44,20 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       if (mockData) {
+        const transformedData = transformDataForPivot(
+          mockApiResponse.data.getAvailableF2PortsByTerminalId.list
+        );
         setPivotState((prevState) => ({
           ...prevState,
-          data: mockLargeDataSet,
+          data: transformedData,
         }));
       } else {
         try {
           const response = await fetch(API_URL);
           const json = await response.json();
-
-          const transformedData = transformDataForPivot(json);
+          const transformedData = transformDataForPivot(
+            json.data.getAvailableF2PortsByTerminalId.list
+          );
           setPivotState((prevState) => ({
             ...prevState,
             data: transformedData,
@@ -76,16 +85,16 @@ function App() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", "cable_data.csv");
+    link.setAttribute("download", "f2_ports_data.csv");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen min-w-full bg-gray-100">
       <header className="flex justify-between items-center py-4 px-6 bg-blue-600 text-white">
-        <h1 className="text-3xl font-bold">Cable Data Analysis</h1>
+        <h1 className="text-3xl font-bold">Data Lookup</h1>
         <button
           onClick={exportDataToCSV}
           className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
@@ -101,6 +110,7 @@ function App() {
               onChange={(s) => setPivotState(s)}
               renderers={Object.assign({}, createPlotlyRenderers(Plot))}
               {...pivotState}
+              className="full-width"
             />
           </div>
         </div>

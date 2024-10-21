@@ -1,0 +1,14 @@
+.full-width {
+  width: 100%;
+}
+
+.pvtTable thead th,
+.pvtTable tbody td {
+  color: black;
+  background-color: #f8f9fa;
+}
+
+.pvtTable {
+  max-height: 100dvh;
+  overflow: auto;
+}
