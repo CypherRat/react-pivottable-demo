@@ -135,7 +135,14 @@ function App() {
 
   const transformDataForPivot = (data) => {
     if (data.length === 0) return [];
-    const headers = Object.keys(data[0]);
+
+    const headers = Object.keys(data[0]).map((header) =>
+      header
+        .replace(/([A-Z])/g, " $1")
+        .trim()
+        .replace(/^./, (str) => str.toUpperCase())
+    );
+
     const rows = data.map((item) => Object.values(item));
     return [headers, ...rows];
   };
