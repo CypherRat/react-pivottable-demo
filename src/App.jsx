@@ -39,7 +39,6 @@ const generateNewMockData = (numEntries) => {
     const addressId = `Z770000${1 + i}`;
     const hubId = `H${1000 + Math.floor(Math.random() * 10)}`;
     const terminalIdCode = `FT-H${10000 + Math.floor(Math.random() * 10)}`;
-    // const terminalExcCode = `AB7${10 + Math.floor(Math.random() * 26)}`;
     const terminalExcCode = `ABCD${1 + Math.floor(Math.random() * 9)}`;
 
     baseEntries.push({
