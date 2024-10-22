@@ -160,6 +160,21 @@ function App() {
     document.body.removeChild(link);
   };
 
+  const handlePivotChange = (newState) => {
+    const rows = Array.isArray(newState?.rows) ? newState?.rows : [];
+    const cols = Array.isArray(newState?.cols) ? newState?.cols : [];
+
+    const uniqueRows = Array.from(new Set(rows));
+    const uniqueCols = Array.from(new Set(cols));
+
+    setPivotState({
+      ...newState,
+      rows: uniqueRows || [],
+      cols: uniqueCols || [],
+    });
+    // flushSync(() => setPivotState(newState)); Solves the issues of duplicate cols and rows but can impact performance
+  };
+
   return (
     <div className="wrapper bg-gray-100">
       <header className="flex justify-between items-center py-4 px-6 bg-blue-600 text-white">
@@ -186,12 +201,13 @@ function App() {
           <div className="flex-grow overflow-auto">
             <PivotTableUI
               data={pivotState.data}
-              onChange={(s) => setPivotState(s)}
+              onChange={handlePivotChange}
               renderers={Object.assign(
                 {},
                 TableRenderers,
                 createPlotlyRenderers(Plot)
               )}
+              unusedOrientationCutoff={Infinity}
               {...pivotState}
               className="full-width"
             />
