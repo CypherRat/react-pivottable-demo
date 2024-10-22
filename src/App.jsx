@@ -101,7 +101,6 @@ function App() {
         setPivotState((prevState) => ({
           ...prevState,
           data: transformedData,
-          rendererName: "Grouped Column Chart",
         }));
         setApiStatus(
           response.data.getAvailableF2PortsByTerminalId.status
