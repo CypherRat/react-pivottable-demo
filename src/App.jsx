@@ -6,6 +6,7 @@ import TableRenderers from "react-pivottable/TableRenderers";
 import Plot from "react-plotly.js";
 import Papa from "papaparse";
 import "./App.css";
+import { hashStringToColor } from "./utils";
 
 // Utility function to generate random mock data
 // eslint-disable-next-line no-unused-vars
@@ -82,6 +83,26 @@ const mockApiResponse = {
 const mockData = true;
 
 const API_URL = "https://api.example.com/data";
+
+const PRESETS = {
+  preset1: {
+    name: "Address-Main",
+    rows: [
+      "Address Id",
+      "Hub Id",
+      "Terminal Id Code",
+      "Terminal Exc Code",
+      "F2 Port",
+      "F2 Port Status",
+    ],
+    cols: [],
+  },
+  preset2: {
+    name: "Terminal-Port",
+    rows: ["Terminal Id Code"],
+    cols: ["F2 Port"],
+  },
+};
 
 function App() {
   const [pivotState, setPivotState] = useState({
@@ -175,6 +196,22 @@ function App() {
     // flushSync(() => setPivotState(newState)); Solves the issues of duplicate cols and rows but can impact performance
   };
 
+  const resetRowsAndCols = () => {
+    setPivotState((prevState) => ({
+      ...prevState,
+      rows: [],
+      cols: [],
+    }));
+  };
+
+  const setPreset = (preset) => {
+    setPivotState((prevState) => ({
+      ...prevState,
+      rows: preset.rows,
+      cols: preset.cols,
+    }));
+  };
+
   return (
     <div className="wrapper bg-gray-100">
       <header className="flex justify-between items-center py-4 px-6 bg-blue-600 text-white">
@@ -188,15 +225,40 @@ function App() {
       </header>
       <main className="flex-grow overflow-hidden p-4">
         <div className="bg-white shadow-md rounded-lg p-6 h-full flex flex-col">
-          <div className="mb-4">
-            <p
-              className={`font-semibold ${
-                apiStatus === "Success" ? "text-green-500" : "text-red-500"
-              }`}
-            >
-              Status: {apiStatus}
-            </p>
-            <p className="text-gray-700">Message: {apiMessage}</p>
+          <div className="mb-4 flex justify-between items-center">
+            <div>
+              <p
+                className={`font-semibold ${
+                  apiStatus === "Success" ? "text-green-500" : "text-red-500"
+                }`}
+              >
+                Status: {apiStatus}
+              </p>
+              <p className="text-gray-700">Message: {apiMessage}</p>
+            </div>
+            <div className="presets">
+              {Object.entries(PRESETS).map(([key, preset]) => {
+                const color = hashStringToColor(key);
+                return (
+                  <button
+                    key={key}
+                    onClick={() => setPreset(preset)}
+                    className={`${color} hover:${color.replace(
+                      "500",
+                      "700"
+                    )} text-white font-bold py-2 ml-2 px-4 rounded`}
+                  >
+                    {preset.name || key.replace("preset", "Preset ")}
+                  </button>
+                );
+              })}
+              <button
+                onClick={resetRowsAndCols}
+                className="reset-btn hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Reset
+              </button>
+            </div>
           </div>
           <div className="flex-grow overflow-auto">
             <PivotTableUI

@@ -5,6 +5,15 @@
   width: 100%;
 }
 
+.presets {
+  display: flex;
+  gap: 5px;
+}
+
+.reset-btn {
+  background-color: red;
+}
+
 .full-width {
   width: 100%;
 }
