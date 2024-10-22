@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import PivotTableUI from "react-pivottable/PivotTableUI";
 import "react-pivottable/pivottable.css";
 import createPlotlyRenderers from "react-pivottable/PlotlyRenderers";
+import TableRenderers from "react-pivottable/TableRenderers";
 import Plot from "react-plotly.js";
 import Papa from "papaparse";
 import "./App.css";
@@ -100,6 +101,7 @@ function App() {
         setPivotState((prevState) => ({
           ...prevState,
           data: transformedData,
+          rendererName: "Grouped Column Chart",
         }));
         setApiStatus(
           response.data.getAvailableF2PortsByTerminalId.status
@@ -160,7 +162,7 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="wrapper bg-gray-100">
       <header className="flex justify-between items-center py-4 px-6 bg-blue-600 text-white">
         <h1 className="text-3xl font-bold">Data Lookup</h1>
         <button
@@ -186,7 +188,11 @@ function App() {
             <PivotTableUI
               data={pivotState.data}
               onChange={(s) => setPivotState(s)}
-              renderers={Object.assign({}, createPlotlyRenderers(Plot))}
+              renderers={Object.assign(
+                {},
+                TableRenderers,
+                createPlotlyRenderers(Plot)
+              )}
               {...pivotState}
               className="full-width"
             />
